@@ -25,19 +25,6 @@ class Trainer:
         self.config = config
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        self.model = VITS(config).to(self.device)
-        self.mpd = MultiPeriodDiscriminator(config.model.discriminator.mpd.periods).to(self.device)
-        self.msd = MultiScaleDiscriminator(config.model.discriminator.msd.scales).to(self.device)
-
-        self.optimizer_g, self.optimizer_d = get_optimizer(
-            self.model,
-            nn.ModuleList([self.mpd, self.msd]),
-            config
-        )
-
-        self.scheduler_g = get_scheduler(self.optimizer_g, config)
-        self.scheduler_d = get_scheduler(self.optimizer_d, config)
-
         self.scaler = GradScaler(enabled=config.train.mixed_precision)
 
         self.mel_transform = MelSpectrogram(

@@ -80,6 +80,56 @@ python -c "import torch; print(torch.__version__)"
 python -c "import ullim_vits; print(ullim_vits.__version__)"
 ```
 
+### 6. Configure WandB (Optional but Recommended)
+
+WandB is used for experiment tracking and visualization.
+
+#### Get API Key
+
+1. Sign up at [wandb.ai](https://wandb.ai)
+2. Get your API key from [wandb.ai/authorize](https://wandb.ai/authorize)
+
+#### Set Up Environment
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and add your key:
+
+```bash
+WANDB_API_KEY=wandb-api-key
+```
+
+#### Configure Entity
+
+Edit `configs/config.yaml` and set your WandB username:
+
+```yaml
+wandb:
+    enabled: true
+    project: "ullim-vits"
+    entity: "your-username"
+```
+
+#### Alternative: Login via CLI
+
+```bash
+poetry run wandb login
+```
+
+#### Disable WandB
+
+```bash
+poetry run ullim-train wandb.enabled=false
+```
+
+Or set environment variable:
+
+```bash
+export WANDB_MODE=disabled
+```
+
 ## CUDA Setup
 
 ### Check CUDA Version

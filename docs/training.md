@@ -110,20 +110,71 @@ poetry run ullim-train \
 
 ### WandB Integration
 
-Training automatically logs to WandB:
+#### Set Up
 
-- Loss curves
-- Audio samples
-- Gradient norms
-- Learning rates
+Before training, configure your WandB API key:
 
-Configure in `configs/train/default.yaml`:
+```bash
+cp .env.example .env
+```
+
+Edit `.env`:
+
+```bash
+WANDB_API_KEY=wandb-api-key
+```
+
+Alternative login:
+
+```bash
+poetry run wandb login
+```
+
+Get your API key from [wandb.ai/authorize](https://wandb.ai/authorize)
+
+#### Set Your Username
+
+Edit `configs/config.yaml`:
 
 ```yaml
 wandb:
     enabled: true
     project: "ullim-vits"
     entity: "your-username"
+```
+
+Or override from command line:
+
+```bash
+poetry run ullim-train wandb.entity=your-username
+```
+
+#### Logged Metrics
+
+Training automatically logs:
+
+- Loss curves (mel, KL, discriminator, duration)
+- Audio samples every N steps
+- Gradient norms and statistics
+- Learning rates
+- Model hyperparameters
+- System metrics (GPU usage, memory)
+
+#### View Results
+
+Access your runs at: `https://wandb.ai/your-username/ullim-vits`
+
+#### Disable WandB
+
+```bash
+poetry run ullim-train wandb.enabled=false
+```
+
+Or via environment variable:
+
+```bash
+export WANDB_MODE=disabled
+poetry run ullim-train
 ```
 
 ### Checkpoints
@@ -260,10 +311,31 @@ poetry run ullim-infer \
 - Verify MAS implementation
 - Check phoneme quality
 
-## Custom Dataset Training
+### WandB Connection Issues
 
-1. Prepare data in correct format
-2. Create config: `configs/data/custom.yaml`
-3. Train: `poetry run ullim-train data=custom`
+**API key not found:**
 
-See README for data format details.
+```bash
+cat .env | grep WANDB_API_KEY
+```
+
+Or login manually:
+
+```bash
+poetry run wandb login
+```
+
+**Entity not set:**
+
+Edit `configs/config.yaml` and change `entity: null` to your username
+
+**Runs not showing:**
+
+- Verify `wandb.enabled=true` in config
+- Check entity matches your WandB username
+- Confirm internet connection
+- Check project name: `ullim-vits`
+
+**Permission denied:**
+
+Verify your API key has write permissions for the project

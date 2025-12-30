@@ -60,7 +60,7 @@ poetry install
 4. For development (includes jupyter, pytest, etc.):
 
 ```bash
-poetry install --with dev
+poetry install   --with dev
 ```
 
 5. Activate environment:
@@ -71,16 +71,34 @@ poetry shell
 
 ## Quick Start
 
+### 0. Environment Setup
+
+Create a `.env` file from the example:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and add your WandB API key:
+
+```
+WANDB_API_KEY=your-wandb-api-key-here
+```
+
+Get your API key from [wandb.ai/authorize](https://wandb.ai/authorize)
+
 ### 1. Data Preparation
 
 **Option 1: Automatic Download (Recommended)**
 
 Download and preprocess Zeroth-Korean dataset automatically:
+
 ```bash
 poetry run ullim-preprocess
 ```
 
 This will:
+
 - Download Zeroth-Korean from HuggingFace
 - Resample audio to 22050Hz
 - Generate metadata files
@@ -89,6 +107,7 @@ This will:
 **Option 2: Manual Download**
 
 If automatic download fails, manually download from [HuggingFace](https://huggingface.co/datasets/kresnik/zeroth_korean) and place in `data/zeroth/` directory, then run:
+
 ```bash
 poetry run ullim-preprocess
 ```

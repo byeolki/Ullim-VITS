@@ -70,6 +70,20 @@ class Trainer:
             split="test"
         )
 
+        self.config.model.n_vocab = train_dataset.phonemizer.vocab_size
+
+        self.model = VITS(self.config).to(self.device)
+        self.mpd = MultiPeriodDiscriminator(self.config.model.discriminator.mpd.periods).to(self.device)
+        self.msd = MultiScaleDiscriminator(self.config.model.discriminator.msd.scales).to(self.device)
+
+        self.optimizer_g, self.optimizer_d = get_optimizer(
+            self.model,
+            nn.ModuleList([self.mpd, self.msd]),
+            self.config
+        )
+        self.scheduler_g = get_scheduler(self.optimizer_g, self.config)
+        self.scheduler_d = get_scheduler(self.optimizer_d, self.config)
+
         self.train_loader = DataLoader(
             train_dataset,
             batch_size=self.config.train.batch_size,
@@ -88,8 +102,6 @@ class Trainer:
             collate_fn=VITSCollate(),
             pin_memory=self.config.train.pin_memory
         )
-
-        self.model.config.model.n_vocab = train_dataset.phonemizer.vocab_size
 
     def train_step(self, batch):
         audio = batch["audio"].to(self.device)

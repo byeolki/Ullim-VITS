@@ -13,7 +13,7 @@ class VITS(nn.Module):
         super().__init__()
         self.config = config
 
-        self.n_vocab = config.model.n_vocab
+        self.n_vocab = getattr(config.model, 'n_vocab', 100)
         self.hidden_channels = config.model.hidden_channels
         self.n_speakers = config.model.n_speakers
         self.speaker_embed_dim = config.model.speaker_embed_dim

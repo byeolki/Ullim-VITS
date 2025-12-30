@@ -73,18 +73,25 @@ poetry shell
 
 ### 1. Data Preparation
 
-Download and preprocess Zeroth-Korean dataset:
+**Option 1: Automatic Download (Recommended)**
 
+Download and preprocess Zeroth-Korean dataset automatically:
 ```bash
 poetry run ullim-preprocess
 ```
 
 This will:
-
 - Download Zeroth-Korean from HuggingFace
 - Resample audio to 22050Hz
 - Generate metadata files
 - Compute dataset statistics
+
+**Option 2: Manual Download**
+
+If automatic download fails, manually download from [HuggingFace](https://huggingface.co/datasets/kresnik/zeroth_korean) and place in `data/zeroth/` directory, then run:
+```bash
+poetry run ullim-preprocess
+```
 
 ### 2. Training
 

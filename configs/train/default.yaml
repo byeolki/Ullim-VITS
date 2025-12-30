@@ -1,0 +1,42 @@
+# A100 40GB optimized
+
+batch_size: 32
+num_workers: 8
+pin_memory: true
+persistent_workers: true
+
+epochs: 1000
+save_every: 5000
+eval_every: 1000
+log_every: 100
+
+mixed_precision: true
+gradient_clip_val: 1000.0
+gradient_accumulation_steps: 1
+
+optimizer:
+    generator:
+        lr: 2.0e-4
+        betas: [0.8, 0.99]
+        eps: 1.0e-9
+    discriminator:
+        lr: 2.0e-4
+        betas: [0.8, 0.99]
+        eps: 1.0e-9
+
+scheduler:
+    type: "exponential"
+    gamma: 0.999875
+
+losses:
+    mel_loss_weight: 45.0
+    kl_loss_weight: 1.0
+    feature_loss_weight: 2.0
+    gen_loss_weight: 1.0
+    disc_loss_weight: 1.0
+    duration_loss_weight: 1.0
+
+wandb:
+    enabled: true
+    project: "ullim-vits"
+    entity: null

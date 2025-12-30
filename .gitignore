@@ -1,4 +1,3 @@
-# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -16,42 +15,118 @@ parts/
 sdist/
 var/
 wheels/
+pip-wheel-metadata/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
-# Poetry
+*.manifest
+*.spec
+
+pip-log.txt
+pip-delete-this-directory.txt
+
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+*.mo
+*.pot
+
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+instance/
+.webassets-cache
+
+.scrapy
+
+docs/_build/
+
+target/
+
+.ipynb_checkpoints
+
+profile_default/
+ipython_config.py
+
+.python-version
+
 poetry.lock
+pdm.lock
+Pipfile.lock
 
-# Experiments
+.pytype/
+
+.pyre/
+
+.pytype/
+
+.dmypy.json
+dmypy.json
+
+.pyre/
+
 experiments/*
 !experiments/.gitkeep
 
-# Logs
 logs/
 *.log
 
-# Checkpoints
+checkpoints/
 *.pt
 *.pth
 *.ckpt
+*.bin
+*.h5
 
-# Jupyter
-.ipynb_checkpoints
+/data/
+/datasets/
+/cache/
 
-# IDE
+wandb/
+runs/
+mlruns/
+
 .vscode/
 .idea/
 *.swp
 *.swo
-
-# wandb
-wandb/
-
-# Data
-data/
-datasets/
-
-# OS
+*~
 .DS_Store
 Thumbs.db
+
+*.wav
+*.mp3
+*.flac
+*.ogg
+
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+*.npy
+*.npz
+*.pkl
+*.pickle
+
+.hydra/
+outputs/
+multirun/

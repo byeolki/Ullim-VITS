@@ -1,9 +1,10 @@
 import os
+import torch
+import torchaudio
 from datasets import load_dataset
 from pathlib import Path
 import argparse
 from tqdm import tqdm
-import torchaudio
 
 
 def download_zeroth(output_dir="data/zeroth", sample_rate=22050):

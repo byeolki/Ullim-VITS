@@ -178,9 +178,13 @@ def librosa_mel_fn(sr, n_fft, n_mels, fmin, fmax):
 
 
 def load_wav(path, sampling_rate):
+    import soundfile as sf
     import librosa
 
-    audio, sr = librosa.load(path, sr=sampling_rate, mono=True)
+    audio, sr = sf.read(path, dtype='float32')
+
+    if sr != sampling_rate:
+        audio = librosa.resample(audio, orig_sr=sr, target_sr=sampling_rate)
 
     audio = torch.FloatTensor(audio)
 

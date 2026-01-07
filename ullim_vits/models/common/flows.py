@@ -12,7 +12,7 @@ class ActNorm(nn.Module):
         self.logs = nn.Parameter(torch.zeros(1, channels, 1))
         self.bias = nn.Parameter(torch.zeros(1, channels, 1))
 
-    def forward(self, x, x_mask=None, reverse=False):
+    def forward(self, x, x_mask=None, g=None, reverse=False):
         if not self.initialized:
             self.initialize(x, x_mask)
             self.initialized = True
@@ -113,9 +113,11 @@ class WN(nn.Module):
 
         if g is not None:
             g = self.cond_layer(g)
+            g = torch.clamp(g, min=-10, max=10)
 
         for i in range(self.n_layers):
             x_in = self.in_layers[i](x)
+            x_in = torch.clamp(x_in, min=-100, max=100)
 
             if g is not None:
                 cond_offset = i * 2 * self.hidden_channels
@@ -125,6 +127,7 @@ class WN(nn.Module):
 
             acts = x_in + g_l
             acts = acts * x_mask
+            acts = torch.clamp(acts, min=-100, max=100)
 
             acts = F.glu(acts, dim=1)
 

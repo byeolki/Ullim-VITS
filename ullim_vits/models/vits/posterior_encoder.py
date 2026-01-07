@@ -30,19 +30,19 @@ class PosteriorEncoder(nn.Module):
 
     def forward(self, x, x_lengths, g=None):
         x_mask = torch.unsqueeze(self.sequence_mask(x_lengths, x.size(2)), 1).to(x.dtype)
-
         x = self.pre(x) * x_mask
 
         if g is not None:
             g = self.cond(g)
 
         for i in range(self.n_layers):
-            x = self.enc[i](x, g=g)
+            x = self.enc[i](x, x_mask)
+            if g is not None:
+                x = x + g
             x = x * x_mask
 
         stats = self.proj(x) * x_mask
         m, logs = torch.split(stats, self.out_channels, dim=1)
-
         z = (m + torch.randn_like(m) * torch.exp(logs)) * x_mask
 
         return z, m, logs, x_mask

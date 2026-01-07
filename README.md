@@ -118,6 +118,9 @@ Start training with default configuration:
 
 ```bash
 poetry run ullim-train
+
+# Want hide nnpack errors
+poetry run ullim-train 2>&1 | grep -v "NNPACK"
 ```
 
 Or with custom config:

@@ -192,5 +192,10 @@ def load_wav(path, sampling_rate):
 
 
 def save_wav(path, audio, sampling_rate):
-    import torchaudio
-    torchaudio.save(path, audio.unsqueeze(0), sampling_rate)
+    from scipy.io import wavfile
+    import numpy as np
+    audio_np = audio.cpu().numpy()
+    if audio_np.ndim == 2:
+        audio_np = audio_np.squeeze()
+    audio_np = (audio_np * 32767).astype(np.int16)
+    wavfile.write(path, sampling_rate, audio_np)

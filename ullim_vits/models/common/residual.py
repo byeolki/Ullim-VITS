@@ -27,13 +27,13 @@ class WaveNetResidualBlock(nn.Module):
                              padding=dilation*(kernel_size-1)//2, dilation=dilation)
         self.projection = nn.Conv1d(channels, channels, 1)
 
-    def forward(self, x, g=None):
+    def forward(self, x, x_mask=None):
         residual = x
 
         x = self.conv(x)
 
-        if g is not None:
-            x = x + g
+        if x_mask is not None:
+            x = x * x_mask
 
         gate, filter_out = torch.chunk(x, 2, dim=1)
         x = torch.sigmoid(gate) * torch.tanh(filter_out)

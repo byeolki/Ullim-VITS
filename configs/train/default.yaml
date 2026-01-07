@@ -1,6 +1,6 @@
 # A100 40GB optimized
 
-batch_size: 32
+batch_size: 128
 num_workers: 8
 pin_memory: true
 persistent_workers: true
@@ -11,7 +11,7 @@ eval_every: 1000
 log_every: 100
 
 mixed_precision: true
-gradient_clip_val: 1000.0
+gradient_clip_val: 5.0
 gradient_accumulation_steps: 1
 
 optimizer:
@@ -34,7 +34,7 @@ losses:
     feature_loss_weight: 2.0
     gen_loss_weight: 1.0
     disc_loss_weight: 1.0
-    duration_loss_weight: 1.0
+    duration_loss_weight: 0.1
 
 wandb:
     enabled: true

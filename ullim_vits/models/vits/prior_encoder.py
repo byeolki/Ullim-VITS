@@ -109,7 +109,15 @@ class PriorEncoder(nn.Module):
     def forward(self, x, x_lengths, g=None):
         x, m, logs, x_mask = self.text_encoder(x, x_lengths, g)
 
+        logs = torch.clamp(logs, min=-10, max=10)
+        m = torch.clamp(m, min=-100, max=100)
+
         z = (m + torch.randn_like(m) * torch.exp(logs)) * x_mask
+        z = torch.clamp(z, min=-100, max=100)
+
         z = self.flow(z, x_mask, g=g, reverse=False)
+
+        z = torch.clamp(z, min=-100, max=100)
+        z = torch.nan_to_num(z, nan=0.0, posinf=10.0, neginf=-10.0)
 
         return z, m, logs, x_mask

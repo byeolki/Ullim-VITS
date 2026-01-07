@@ -1,28 +1,25 @@
 import hydra
 from omegaconf import DictConfig
 import torch
-import argparse
 from pathlib import Path
 
 from ullim_vits.inference.synthesizer import Synthesizer
 
 
-@hydra.main(version_base=None, config_path="../../configs", config_name="config")
+@hydra.main(version_base=None, config_path="../../configs", config_name="inference")
 def main(config: DictConfig):
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--checkpoint", type=str, required=True)
-    parser.add_argument("--text", type=str, required=True)
-    parser.add_argument("--output", type=str, default="output.wav")
-    parser.add_argument("--speaker_id", type=int, default=0)
-    args = parser.parse_args()
+    synthesizer = Synthesizer(config, config.checkpoint)
 
-    synthesizer = Synthesizer(config, args.checkpoint)
+    audio = synthesizer.synthesize(
+        config.text,
+        speaker_id=config.get("speaker_id", 0),
+        noise_scale=config.get("noise_scale", 0.667),
+        length_scale=config.get("length_scale", 1.0)
+    )
 
-    audio = synthesizer.synthesize(args.text, speaker_id=args.speaker_id)
+    synthesizer.save_audio(audio, config.output)
 
-    synthesizer.save_audio(audio, args.output)
-
-    print(f"Audio saved to {args.output}")
+    print(f"Audio saved to {config.output}")
 
 
 if __name__ == "__main__":

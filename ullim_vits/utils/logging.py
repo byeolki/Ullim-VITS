@@ -1,4 +1,4 @@
-import os
+import torch
 import wandb
 from pathlib import Path
 from dotenv import load_dotenv
@@ -47,5 +47,5 @@ def save_checkpoint(state, checkpoint_dir, step):
 
 
 def load_checkpoint(checkpoint_path, device='cpu'):
-    checkpoint = torch.load(checkpoint_path, map_location=device)
+    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
     return checkpoint

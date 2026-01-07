@@ -30,12 +30,14 @@ class DiscriminatorP(nn.Module):
 
         for conv in self.convs:
             x = conv(x)
+            x = torch.clamp(x, min=-100, max=100)
             x = F.leaky_relu(x, 0.1)
             fmap.append(x)
 
         x = self.conv_post(x)
         fmap.append(x)
         x = torch.flatten(x, 1, -1)
+        x = torch.clamp(x, min=-100, max=100)
 
         return x, fmap
 

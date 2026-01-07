@@ -30,6 +30,14 @@ class MultiHeadAttention(nn.Module):
 
         scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(self.head_dim)
 
+        positions = torch.arange(seq_len, device=x.device).unsqueeze(0) - torch.arange(seq_len, device=x.device).unsqueeze(1)
+        positions = positions.clamp(-self.max_relative_position, self.max_relative_position) + self.max_relative_position
+
+        relative_key_emb = self.relative_key[positions]
+        relative_scores = torch.einsum('bhqd,qkd->bhqk', q, relative_key_emb) / math.sqrt(self.head_dim)
+
+        scores = scores + relative_scores
+
         if mask is not None:
             scores = scores.masked_fill(mask == 0, -1e9)
 
@@ -78,11 +86,13 @@ class RelativePositionMultiHeadAttention(nn.Module):
         positions = torch.arange(seq_len, device=x.device).unsqueeze(0) - torch.arange(seq_len, device=x.device).unsqueeze(1)
         positions = positions.clamp(-self.max_relative_position, self.max_relative_position) + self.max_relative_position
 
-        relative_scores = torch.matmul(q, self.relative_key[positions].transpose(-2, -1)) / math.sqrt(self.head_dim)
-        scores = scores + relative_scores.mean(dim=1, keepdim=True)
+        relative_key_emb = self.relative_key[positions]
+        relative_scores = torch.einsum('bhqd,qkd->bhqk', q, relative_key_emb) / math.sqrt(self.head_dim)
+
+        scores = scores + relative_scores
 
         if mask is not None:
-            scores = scores.masked_fill(mask == 0, -1e9)
+            scores = scores.masked_fill(mask == 0, -1e4)
 
         attn_weights = F.softmax(scores, dim=-1)
 
@@ -90,6 +100,11 @@ class RelativePositionMultiHeadAttention(nn.Module):
             attn_weights = F.dropout(attn_weights, self.dropout, self.training)
 
         attn_output = torch.matmul(attn_weights, v)
+
+        relative_value_emb = self.relative_value[positions]
+        relative_attn = torch.einsum('bhqk,qkd->bhqd', attn_weights, relative_value_emb)
+        attn_output = attn_output + relative_attn
+
         attn_output = attn_output.transpose(1, 2).contiguous().view(batch_size, seq_len, channels)
 
         output = self.out_proj(attn_output)

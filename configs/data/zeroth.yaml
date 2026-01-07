@@ -13,7 +13,7 @@ mel_fmin: 0.0
 mel_fmax: 8000.0
 
 max_wav_value: 32768.0
-segment_size: 8192
+segment_size: 20480
 
 text:
     cleaners: ["korean_cleaners"]

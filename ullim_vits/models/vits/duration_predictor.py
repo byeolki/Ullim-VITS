@@ -38,7 +38,7 @@ class StochasticDurationPredictor(nn.Module):
             self.post_norms.append(nn.LayerNorm(filter_channels))
 
         self.post_flows = ResidualCouplingBlock(
-            1, filter_channels, kernel_size, 1, 4, n_flows, gin_channels
+            filter_channels, filter_channels, kernel_size, 1, 4, n_flows, gin_channels
         )
 
         if gin_channels != 0:
@@ -72,9 +72,9 @@ class StochasticDurationPredictor(nn.Module):
 
             flows = self.post_proj(flows) * x_mask
 
-            logw = w.unsqueeze(1)
-            logw = self.post_flows(logw, x_mask, g=flows, reverse=reverse)
-            logw = logw.squeeze(1)
+            h = w.view(w.size(0), 1, -1).expand(-1, self.filter_channels, -1)
+            h = self.post_flows(h, x_mask, g=flows, reverse=reverse)
+            logw = h[:, :1, :].squeeze(1)
 
             return logw
         else:
@@ -91,6 +91,7 @@ class StochasticDurationPredictor(nn.Module):
             logw = torch.randn(x.size(0), 1, x.size(2)).to(x.dtype).to(x.device) * noise_scale
             logw = self.post_flows(logw, x_mask, g=flows, reverse=reverse)
             logw = logw.squeeze(1)
+            logw = torch.clamp(logw, min=-10, max=10)
 
             w = torch.exp(logw) * x_mask.squeeze(1)
 

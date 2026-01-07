@@ -6,7 +6,7 @@ import torch.nn.functional as F
 class DiscriminatorS(nn.Module):
     def __init__(self, use_spectral_norm=False):
         super().__init__()
-        norm_f = nn.utils.spectral_norm if use_spectral_norm else nn.utils.weight_norm
+        norm_f = nn.utils.spectral_norm if use_spectral_norm else nn.utils.parametrizations.weight_norm
 
         self.convs = nn.ModuleList([
             norm_f(nn.Conv1d(1, 16, 15, 1, padding=7)),
@@ -24,12 +24,14 @@ class DiscriminatorS(nn.Module):
 
         for conv in self.convs:
             x = conv(x)
+            x = torch.clamp(x, min=-100, max=100)
             x = F.leaky_relu(x, 0.1)
             fmap.append(x)
 
         x = self.conv_post(x)
         fmap.append(x)
         x = torch.flatten(x, 1, -1)
+        x = torch.clamp(x, min=-100, max=100)
 
         return x, fmap
 

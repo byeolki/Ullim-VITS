@@ -7,12 +7,23 @@ from ullim_vits.utils.logging import load_checkpoint
 
 class Synthesizer:
     def __init__(self, config, checkpoint_path):
-        self.config = config
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        self.model = VITS(config).to(self.device)
-
         checkpoint = load_checkpoint(checkpoint_path, self.device)
+
+        # Use config from checkpoint if available, otherwise use provided config
+        if "config" in checkpoint:
+            self.config = checkpoint["config"]
+        else:
+            self.config = config
+            # Extract n_vocab from model state_dict
+            model_state = checkpoint["model"]
+            for key in model_state.keys():
+                if "emb.weight" in key:
+                    self.config.model.n_vocab = model_state[key].shape[0]
+                    break
+
+        self.model = VITS(self.config).to(self.device)
         self.model.load_state_dict(checkpoint["model"])
         self.model.eval()
 

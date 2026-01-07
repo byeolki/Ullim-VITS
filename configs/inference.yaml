@@ -1,0 +1,21 @@
+# A100 40GB optimized configuration
+
+defaults:
+    - model: vits_base
+    - data: zeroth
+    - _self_
+
+# Checkpoint path
+checkpoint: ??? # Required: path to checkpoint file
+
+# Synthesis parameters
+text: ??? # Required: text to synthesize
+output: "output.wav" # Output audio file path
+speaker_id: 0 # Speaker ID (0-114 for Zeroth-Korean)
+
+# Synthesis control
+noise_scale: 0.667 # Noise scale for variational inference (higher = more variation)
+length_scale: 1.0 # Length scale for duration (higher = slower speech)
+
+# Device
+device: "cuda" # "cuda" or "cpu"

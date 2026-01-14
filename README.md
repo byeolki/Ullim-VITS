@@ -1,6 +1,7 @@
 # Ullim VITS
 
 Few-shot Korean voice cloning with VITS architecture
+- Project will resume in 2 months.
 
 ![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.5+-ee4c2c.svg)

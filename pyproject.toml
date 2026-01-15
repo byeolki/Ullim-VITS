@@ -2,7 +2,7 @@
 name = "ullim-vits"
 version = "0.1.0"
 description = "Few-shot Korean voice cloning with VITS"
-authors = ["Your Name <you@example.com>"]
+authors = []
 readme = "README.md"
 packages = [{include = "ullim_vits"}]
 

@@ -30,14 +30,6 @@ class MultiHeadAttention(nn.Module):
 
         scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(self.head_dim)
 
-        positions = torch.arange(seq_len, device=x.device).unsqueeze(0) - torch.arange(seq_len, device=x.device).unsqueeze(1)
-        positions = positions.clamp(-self.max_relative_position, self.max_relative_position) + self.max_relative_position
-
-        relative_key_emb = self.relative_key[positions]
-        relative_scores = torch.einsum('bhqd,qkd->bhqk', q, relative_key_emb) / math.sqrt(self.head_dim)
-
-        scores = scores + relative_scores
-
         if mask is not None:
             scores = scores.masked_fill(mask == 0, -1e9)
 

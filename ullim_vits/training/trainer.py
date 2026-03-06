@@ -135,7 +135,6 @@ class Trainer:
 
             loss_disc = loss_disc_mpd + loss_disc_msd
 
-            # Check for NaN/Inf in discriminator loss
             if not torch.isfinite(loss_disc):
                 print(
                     f"Warning: Non-finite discriminator loss detected: {loss_disc.item()}, skipping discriminator update"
@@ -189,12 +188,11 @@ class Trainer:
 
             loss_g = loss_mel + loss_kl + loss_dur + loss_gen + loss_fm
 
-            # Check for NaN/Inf in generator loss
             if not torch.isfinite(loss_g):
                 print(
                     f"Warning: Non-finite generator loss detected: {loss_g.item()}, skipping generator update"
                 )
-                loss_g = loss_mel + loss_kl + loss_dur  # Use only stable losses
+                loss_g = loss_mel + loss_kl + loss_dur
 
         if torch.isfinite(loss_g) and loss_g.item() > 0:
             self.scaler.scale(loss_g).backward()

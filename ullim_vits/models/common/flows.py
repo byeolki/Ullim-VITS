@@ -21,7 +21,7 @@ class ActNorm(nn.Module):
             z = (x - self.bias) * torch.exp(-self.logs) * x_mask
             logdet = None
         else:
-            z = self.logs + self.bias + x * torch.exp(self.logs)
+            z = x * torch.exp(self.logs) + self.bias
             if x_mask is not None:
                 z = z * x_mask
 

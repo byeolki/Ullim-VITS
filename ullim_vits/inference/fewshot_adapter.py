@@ -73,7 +73,7 @@ class FewShotAdapter:
                 for i in range(audio.size(0)):
                     start = ids_slice[i] * self.config.data.hop_length
                     end = start + y_hat.size(-1)
-                    y[i, :, :] = audio[i, start:end]
+                    y[i, 0, :] = audio[i, start:end]
 
                 loss = nn.functional.l1_loss(y_hat, y)
 

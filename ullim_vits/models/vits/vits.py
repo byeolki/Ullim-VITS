@@ -147,9 +147,11 @@ class VITS(nn.Module):
             g,
         )
 
-    def infer(self, phonemes, phoneme_lengths, speaker_id=None, noise_scale=1.0, length_scale=1.0):
+    def infer(self, phonemes, phoneme_lengths, speaker_id=None, reference_mel=None, noise_scale=1.0, length_scale=1.0):
         if self.n_speakers > 1 and speaker_id is not None:
             g = self.emb_g(speaker_id).unsqueeze(-1)
+        elif reference_mel is not None:
+            g = self.speaker_encoder(reference_mel).unsqueeze(-1)
         else:
             g = None
 

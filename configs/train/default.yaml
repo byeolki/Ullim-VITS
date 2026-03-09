@@ -40,3 +40,8 @@ wandb:
     enabled: true
     project: "ullim-vits"
     entity: null
+
+discord:
+    enabled: false
+    webhook_url: ${oc.env:DISCORD_WEBHOOK_URL,""}
+    notify_every_n_epochs: 1

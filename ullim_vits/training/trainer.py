@@ -18,6 +18,8 @@ from ullim_vits.models.discriminator.msd import MultiScaleDiscriminator
 from ullim_vits.models.vits.vits import VITS
 from ullim_vits.training.optimizer import get_optimizer
 from ullim_vits.training.scheduler import get_scheduler
+from discord_train_logger import TrainNotifier
+
 from ullim_vits.utils.audio import MelSpectrogram
 from ullim_vits.utils.logging import Logger, load_checkpoint, save_checkpoint
 
@@ -39,6 +41,13 @@ class Trainer:
         ).to(self.device)
 
         self.logger = Logger(config)
+
+        discord_cfg = config.train.discord
+        self.notifier = (
+            TrainNotifier(discord_cfg.webhook_url)
+            if discord_cfg.enabled and discord_cfg.webhook_url
+            else None
+        )
 
         self.step = 0
         self.epoch = 0
@@ -271,6 +280,15 @@ class Trainer:
         checkpoint_dir = Path(self.config.output_dir) / "checkpoints"
         checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
+        if self.notifier:
+            self.notifier.on_train_start(
+                experiment=self.config.experiment_name,
+                config_summary={
+                    "epochs": self.config.train.epochs,
+                    "batch_size": self.config.train.batch_size,
+                },
+            )
+
         for epoch in range(self.config.train.epochs):
             self.epoch = epoch
             epoch_start_time = time.time()
@@ -288,6 +306,9 @@ class Trainer:
                     print(f"Validation loss: {val_loss}")
 
                 if self.step % self.config.train.save_every == 0:
+                    ckpt_path = str(checkpoint_dir / f"checkpoint_{self.step}.pt")
+                    if self.notifier:
+                        self.notifier.on_checkpoint_saved(step=self.step, path=ckpt_path)
                     save_checkpoint(
                         {
                             "step": self.step,
@@ -311,5 +332,17 @@ class Trainer:
 
             epoch_time = time.time() - epoch_start_time
             print(f"Epoch {epoch} completed in {epoch_time:.2f}s")
+
+            notify_every = self.config.train.discord.notify_every_n_epochs
+            if self.notifier and (epoch + 1) % notify_every == 0:
+                self.notifier.on_epoch_end(
+                    epoch=epoch + 1,
+                    metrics={**losses, "epoch_time": f"{epoch_time:.1f}s"},
+                    total_epochs=self.config.train.epochs,
+                    step=self.step,
+                )
+
+        if self.notifier:
+            self.notifier.on_train_end(total_steps=self.step)
 
         self.logger.finish()

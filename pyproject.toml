@@ -24,6 +24,7 @@ huggingface-hub = "^0.19.0"
 scipy = "^1.11.0"
 numpy = "^1.24.0"
 python-dotenv = "^1.2.1"
+discord-train-logger = {git = "https://github.com/byeolki/discord-train-logger.git"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"

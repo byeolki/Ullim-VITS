@@ -130,3 +130,6 @@ venv.bak/
 .hydra/
 outputs/
 multirun/
+
+setup.sh
+test_inference.yaml

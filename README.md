@@ -80,13 +80,14 @@ Create a `.env` file from the example:
 cp .env.example .env
 ```
 
-Edit `.env` and add your WandB API key:
+Edit `.env` and add your API keys:
 
 ```
 WANDB_API_KEY=your-wandb-api-key-here
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...  # optional
 ```
 
-Get your API key from [wandb.ai/authorize](https://wandb.ai/authorize)
+Get your WandB API key from [wandb.ai/authorize](https://wandb.ai/authorize)
 
 ### 1. Data Preparation
 
@@ -113,7 +114,26 @@ If automatic download fails, manually download from [HuggingFace](https://huggin
 poetry run ullim-preprocess
 ```
 
-### 2. Training
+### 2. Discord Notifications (Optional)
+
+Get notified on training events (epoch end, checkpoint saved, errors) via Discord webhook.
+
+1. Go to your Discord server → Server Settings → Integrations → Webhooks → New Webhook
+2. Copy the webhook URL and add it to `.env`:
+
+```
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
+```
+
+3. Enable in config:
+
+```bash
+poetry run ullim-train train.discord.enabled=true
+```
+
+> Powered by [discord-train-logger](https://github.com/byeolki/discord-train-logger)
+
+### 3. Training
 
 Start training with default configuration:
 
@@ -130,7 +150,7 @@ Or with custom config:
 poetry run ullim-train model=vits_large train.batch_size=16
 ```
 
-### 3. Inference
+### 4. Inference
 
 Generate speech from text:
 
@@ -142,7 +162,7 @@ poetry run ullim-infer \
   --speaker_id 0
 ```
 
-### 4. Few-shot Adaptation
+### 5. Few-shot Adaptation
 
 Adapt model to a new voice with reference audio:
 
